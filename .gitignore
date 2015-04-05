@@ -195,6 +195,7 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 
+#Ignore user based files in an Unreal Engine 4 Project Directory
 DerivedDataCache/
 Intermediate/
 Saved/
