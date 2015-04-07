@@ -1,16 +1,18 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
+
 #include "GameFramework/GameMode.h"
 #include "machinesGameMode.generated.h"
 
-UCLASS(minimalapi)
-class AmachinesGameMode : public AGameMode
+/**
+ * 
+ */
+UCLASS()
+class MACHINES_API AmachinesGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
 public:
 	AmachinesGameMode(const FObjectInitializer& ObjectInitializer);
 };
-
-
-

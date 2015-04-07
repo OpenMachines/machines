@@ -1,9 +1,6 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
-#ifndef __MACHINES_H__
-#define __MACHINES_H__
+#pragma once
 
-#include "EngineMinimal.h"
+#include "Engine.h"
 
-
-#endif

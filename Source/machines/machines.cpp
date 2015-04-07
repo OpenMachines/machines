@@ -1,7 +1,5 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "machines.h"
 
-
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, machines, "machines" );
- 
