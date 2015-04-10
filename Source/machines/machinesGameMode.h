@@ -13,6 +13,8 @@ class MACHINES_API AmachinesGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
+	//virtual void BeginPlay() override;
+
 public:
 	AmachinesGameMode(const FObjectInitializer& ObjectInitializer);
 };

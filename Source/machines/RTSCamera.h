@@ -28,6 +28,10 @@ public:
 
 	void ARTSCamera::MoveForward(float Value);
 
+	void ARTSCamera::MoveUp();
+
+	void ARTSCamera::MoveDown();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* CameraComponent;
 };

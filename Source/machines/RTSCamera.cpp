@@ -21,6 +21,11 @@ void ARTSCamera::BeginPlay()
 	RootComponent->SetWorldLocation(FVector(0, 0, 1600));
 	CameraComponent->SetRelativeLocation(RootComponent->GetComponentLocation());
 	CameraComponent->SetRelativeRotation(FRotator(-80, 0, 0));
+
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetPawn(this);
+
+	UE_LOG(LogTemp, Warning, TEXT("%s"));
+	GetName();
 }
 
 // Called every frame
@@ -36,6 +41,10 @@ void ARTSCamera::SetupPlayerInputComponent(class UInputComponent* InputComponent
 	//Super::SetupPlayerInputComponent(InputComponent);
 	InputComponent->BindAxis("MoveForward", this, &ARTSCamera::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ARTSCamera::MoveRight);
+
+	//opposite to invert scrolling
+	InputComponent->BindAction("MouseWheelUp", IE_Pressed, this, &ARTSCamera::MoveDown);
+	InputComponent->BindAction("MouseWheelDown", IE_Pressed, this, &ARTSCamera::MoveUp);
 }
 
 void ARTSCamera::MoveForward(float Value)
@@ -61,4 +70,42 @@ void ARTSCamera::MoveRight(float Value)
 	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	// add movement in that direction
 	AddMovementInput(Direction, Value);
+}
+
+void ARTSCamera::MoveUp()
+{
+	// find out which way is right
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+	// get right vector 
+	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Z);
+
+	// add movement in that direction
+	FVector newPos = GetActorLocation();
+
+	newPos.Z += 30;
+
+	//GetMovementComponent()->AddInputVector(Direction * 120, false);
+
+	SetActorLocation(newPos);
+}
+
+void ARTSCamera::MoveDown()
+{
+	// find out which way is right
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+	// get right vector 
+	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Z);
+
+	// add movement in that direction
+	FVector newPos = GetActorLocation();
+
+	newPos.Z -= 30;
+
+	//GetMovementComponent()->AddInputVector(Direction * -120, false);
+
+	SetActorLocation(newPos);
 }
