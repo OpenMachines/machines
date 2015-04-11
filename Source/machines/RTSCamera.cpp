@@ -21,18 +21,13 @@ void ARTSCamera::BeginPlay()
 	RootComponent->SetWorldLocation(FVector(0, 0, 1600));
 	CameraComponent->SetRelativeLocation(RootComponent->GetComponentLocation());
 	CameraComponent->SetRelativeRotation(FRotator(-80, 0, 0));
-
-	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetPawn(this);
-
-	UE_LOG(LogTemp, Warning, TEXT("%s"));
-	GetName();
 }
 
 // Called every frame
 void ARTSCamera::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-
+	CameraComponent->SetWorldLocation(GetActorLocation());
 }
 
 // Called to bind functionality to input
@@ -49,8 +44,6 @@ void ARTSCamera::SetupPlayerInputComponent(class UInputComponent* InputComponent
 
 void ARTSCamera::MoveForward(float Value)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("%f"));
-	//Value;
 	// find out which way is forward
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator YawRotation(0, Rotation.Yaw, 0);

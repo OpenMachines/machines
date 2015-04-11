@@ -22,7 +22,6 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 	void ARTSCamera::MoveRight(float Value);
 
@@ -31,6 +30,9 @@ public:
 	void ARTSCamera::MoveUp();
 
 	void ARTSCamera::MoveDown();
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* CameraComponent;

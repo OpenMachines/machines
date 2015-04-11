@@ -13,8 +13,11 @@ class MACHINES_API AmachinesGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
-	//virtual void BeginPlay() override;
-
+	virtual void BeginPlay() override;
+	ADefaultPawn* CameraPawn;
+	APlayerController* CameraController;
+	TSubclassOf<APawn> PawnClass;
+	TSubclassOf<APlayerController> ControllerClass;
 public:
 	AmachinesGameMode(const FObjectInitializer& ObjectInitializer);
 };
