@@ -5,6 +5,9 @@
 #include "GameFramework/GameMode.h"
 #include "machinesGameMode.generated.h"
 
+/* Used as an event that occurs once the selection box is hidden, and units should be selected. */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSelectionAction);
+
 /**
  * 
  */
@@ -13,11 +16,18 @@ class MACHINES_API AmachinesGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
-	//virtual void BeginPlay() override;
 	ADefaultPawn* CameraPawn;
+
 	APlayerController* CameraController;
+
 	TSubclassOf<APawn> PawnClass;
+
 	TSubclassOf<APlayerController> ControllerClass;
+
+	
 public:
+
+	FSelectionAction OnSelect;
+
 	AmachinesGameMode(const FObjectInitializer& ObjectInitializer);
 };

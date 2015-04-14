@@ -6,7 +6,9 @@ public class machines : ModuleRules
 {
 	public machines(TargetInfo Target)
 	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule" });
+
+        //PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule" }); 
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

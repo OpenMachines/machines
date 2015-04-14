@@ -10,24 +10,45 @@ class MACHINES_API ARTSUnit : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this character's properties
-	ARTSUnit();
+public:	
+	
+	/* Is the unit selected? */
+	bool bIsSelected;
 
-	// Called when the game starts or when spawned
+	/* Temporary sphere visual representation. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UStaticMeshComponent* StaticMeshComponent;
+
+	/* Sets default values for this character's properties */
+	ARTSUnit(const FObjectInitializer& ObjectInitializer);
+
+	/* Called when the game starts or when spawned */
 	virtual void BeginPlay() override;
 	
-	// Called every frame
+	/* Called every frame */
 	virtual void Tick( float DeltaSeconds ) override;
 
-	// Called to bind functionality to input
+	/* Called to bind functionality to input */
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
-	//bool IsSelected();
-	
-	//void Select();
+	UFUNCTION()
+	void BindToSelectionAction();
 
 private:
 
+	/* Player Controller. */
 	APlayerController* PC;
+
+	/* Checks if a unit should be selected. */
+	UFUNCTION()
+	void CheckForSelection();
+
+	/* Returns the position under the cursor in the world. */
+	FHitResult GetMouseWorldCoordinates();
+
+	/* Moves to mouse cursor. False if there is nothing to move to. */
+	bool MoveToMouseCursor();
+
+	/* Moves to a given destination. */
+	void SetNewMoveDestination(const FVector DestLocation);
 };
