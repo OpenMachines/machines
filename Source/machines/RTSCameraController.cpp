@@ -7,5 +7,5 @@ void ARTSCameraController::BeginPlay()
 {
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
-	bEnableMouseOverEvents = true;
+	bEnableMouseOverEvents = true;	
 }

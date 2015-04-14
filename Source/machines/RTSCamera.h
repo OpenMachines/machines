@@ -5,10 +5,17 @@
 #include "GameFramework/Pawn.h"
 #include "RTSCamera.generated.h"
 
+
+/*
+*/
+
 UCLASS()
 class MACHINES_API ARTSCamera : public ADefaultPawn
 {
 	GENERATED_BODY()
+
+	float CameraMaxHeight = 1600;
+	float CameraMinHeight = 400;
 
 public:
 
@@ -17,8 +24,6 @@ public:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;	
-
-
 
 	/** Camera Component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)

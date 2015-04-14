@@ -13,9 +13,7 @@ AmachinesGameMode::AmachinesGameMode(const FObjectInitializer& ObjectInitializer
 
 	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassFinder(TEXT("Class'/Script/machines.RTSCameraController'"));
 	PlayerControllerClass = PlayerControllerClassFinder.Class;
-}
 
-void AmachinesGameMode::BeginPlay()
-{
-	PlayerControllerClass->GetDefaultObject<APlayerController>()->bShowMouseCursor;
+	static ConstructorHelpers::FClassFinder<AHUD> HUDClassFinder(TEXT("Class'/Script/machines.RTSHUD'"));	
+	HUDClass = HUDClassFinder.Class;
 }

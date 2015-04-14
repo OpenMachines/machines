@@ -44,7 +44,7 @@ void ARTSCamera::BeginPlay()
 void ARTSCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	MoveCameraEdge(DeltaTime);
+	MoveCameraEdge(DeltaTime);	
 }
 
 // Called to bind functionality to input
@@ -99,7 +99,7 @@ void ARTSCamera::MoveForward(float direction)
 
 	//Add the delta to a new vector
 	FVector newLocation = this->GetActorLocation() + deltaMovement;
-
+	//newLocation = FVector(newLocation.X, newLocation.Y, FMath::Clamp(newLocation.Z, CameraMinHeight, CameraMaxHeight));
 	//Set the new location of the pawn
 	SetActorLocation(newLocation);
 }
@@ -120,48 +120,48 @@ void ARTSCamera::MoveRight(float direction)
 	//Add the delta to a new vector
 	FVector newLocation = this->GetActorLocation() + deltaMovement;
 
-	//Set the new location of the pawn
+	//Set the new location of the pawn.
 	SetActorLocation(newLocation);
 }
 
-//Zooms the camera in when scrolling down
+//Zooms the camera in when scrolling down.
 void ARTSCamera::ZoomIn()
 {
-	// find out which way is right
+	//Get yaw rotation.
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-	// get right vector 
+	//Get Z Axis. 
 	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Z);
 
-	// add movement in that direction
+	// Set a temporary vector to current position. 
 	FVector newPos = GetActorLocation();
 
+	//Go down on Z axis by 30 units.
 	newPos.Z -= 30;
 
-	//GetMovementComponent()->AddInputVector(Direction * -120, false);
-
-	SetActorLocation(newPos);
+	//Set the new location, clamping the zoom position.
+	SetActorLocation(FVector(newPos.X, newPos.Y, FMath::Clamp(newPos.Z, CameraMinHeight, CameraMaxHeight)));
 }
 
-//Zooms the camera out when scrolling up
+//Zooms the camera out when scrolling up.
 void ARTSCamera::ZoomOut()
 {
-	// find out which way is right
+	//Get yaw rotation.
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-	// get right vector 
+	//Get Z Axis. 
 	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Z);
 
-	// add movement in that direction
+	// Set a temporary vector to current position. 
 	FVector newPos = GetActorLocation();
 
+	//Go up on Z axis by 30 units.
 	newPos.Z += 30;
 
-	//GetMovementComponent()->AddInputVector(Direction * 120, false);
-
-	SetActorLocation(newPos);
+	//Set the new location, clamping the zoom position.
+	SetActorLocation(FVector(newPos.X, newPos.Y, FMath::Clamp(newPos.Z, CameraMinHeight, CameraMaxHeight)));
 }
 
 //Resets the camera position to original location
