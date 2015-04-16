@@ -7,16 +7,13 @@
 
 
 /*
+* Default player pawn with basic RTS Camera movement controls.
 */
 
 UCLASS()
 class MACHINES_API ARTSCamera : public ADefaultPawn
 {
 	GENERATED_BODY()
-
-	float CameraMaxHeight = 1600;
-	float CameraMinHeight = 400;
-
 public:
 
 	// Sets default values for this pawn's properties
@@ -65,53 +62,58 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 		bool bCanMoveCamera;
 
+	/** Zooms In The Camera */
+	UFUNCTION()
+		void ZoomIn();
+
+	/** Zooms Out The Camera */
+	UFUNCTION()
+		void ZoomOut();
+
+	/** Gets the roatation of the camera with only the yaw value
+	* @return - returns a rotator that is (0, yaw, 0) of the Camera
+	*/
+	UFUNCTION()
+		FRotator GetIsolatedCameraYaw();
+
+	/** Moves the camera forward
+	* @param direcation - (1.0 for forward, -1.0 for backward)
+	*/
+	UFUNCTION()
+		void MoveCameraForward(float direction);
+
+	/** Moves the camera forward
+	* @param direcation - (1.0 for right, -1.0 for left)
+	*/
+	UFUNCTION()
+		void MoveCameraRight(float direction);
+
+	/** Repositions The Camera */
+	UFUNCTION()
+		void RepositionCamera();
+
+	/** Tick Function, Called Every Frame */
+	UFUNCTION()
+		virtual void Tick(float deltaSeconds) override;
+
 	private:
 		/** Sets up player inputs
 		*    @param InputComponent - Input Component
 		*/
 		void SetupPlayerInputComponent(class UInputComponent* InputComponent);
 
-		//Detect whether camera should move based on cursor at viewport edges
+		/* Detect whether camera should move based on cursor at viewport edges */
 		void MoveCameraEdge(float DeltaTime);
 
-		//Move forward by mouse
+		/* Move forward by mouse */
 		void MoveForward(float direction);
 
-		//Move right by mouse
+		/* Move right by mouse */
 		void MoveRight(float direction);
-	public:
-		/** Zooms In The Camera */
-		UFUNCTION()
-			void ZoomIn();
 
-		/** Zooms Out The Camera */
-		UFUNCTION()
-			void ZoomOut();
+		/* Max height of camera. */
+		float CameraMaxHeight = 1600;
 
-		/** Gets the roatation of the camera with only the yaw value
-		* @return - returns a rotator that is (0, yaw, 0) of the Camera
-		*/
-		UFUNCTION()
-			FRotator GetIsolatedCameraYaw();
-
-		/** Moves the camera forward
-		* @param direcation - (1.0 for forward, -1.0 for backward)
-		*/
-		UFUNCTION()
-			void MoveCameraForward(float direction);
-
-		/** Moves the camera forward
-		* @param direcation - (1.0 for right, -1.0 for left)
-		*/
-		UFUNCTION()
-			void MoveCameraRight(float direction);
-
-		/** Repositions The Camera */
-		UFUNCTION()
-			void RepositionCamera();
-
-		/** Tick Function, Called Every Frame */
-		UFUNCTION()
-			virtual void Tick(float deltaSeconds) override;
-
+		/* Min height of camera. */
+		float CameraMinHeight = 400;
 };

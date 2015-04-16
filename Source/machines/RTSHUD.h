@@ -31,6 +31,18 @@ struct Rect{
 		this->Height = Height;
 	}
 
+	/* Find area of rectangle. */
+	float Area(){
+		return Width*Height;
+	}
+
+	/* Set all values to zero. */
+	void Reset(){
+		this->X = 0;
+		this->Y = 0;
+		this->Width = 0;
+		this->Height = 0;
+	}
 };
 
 /**

@@ -5,6 +5,11 @@
 #include "GameFramework/Character.h"
 #include "RTSUnit.generated.h"
 
+enum class UnitAction {Move, Attack, Idle, Patrol, Guard};
+
+/*
+Base class used for all units.
+*/
 UCLASS()
 class MACHINES_API ARTSUnit : public ACharacter
 {
@@ -12,8 +17,57 @@ class MACHINES_API ARTSUnit : public ACharacter
 
 public:	
 	
+	//Unit properties
+	/* Distance at which the unit should stop moving. */
+	const float StopDistance = 120.0f;
+
+	/* Stores current state. */
+	UnitAction State = UnitAction::Idle;
+
+	/* Stores all possible actions for a unit. */
+	TArray<UnitAction*> AvailableCommands;
+
+	/* Display name of a unit. */
+	FString Name;
+
+	/* Current health of a unit. */
+	float CurrentHealth;
+
+	/* Default health of a unit. */
+	float DefaultHealth;
+
+	/* Current armor of a unit. */
+	float CurrentArmor;
+
+	/* Default armor of a unit. */
+	float DefaultArmor;
+
+	/* Current damage of a unit. */
+	float CurrentDamage;
+
+	/* Default damage of a unit. */
+	float DefaultDamage;
+
+	/* Current movement speed of a unit. */
+	float CurrentSpeed;
+
+	/* Default movement speed of a unit. */
+	float DefaultSpeed;
+
+	/* Current attack speed of a unit. */
+	float CurrentAttackSpeed;
+
+	/* Default attack speed of a unit. */
+	float DefaultAttackSpeed;
+
 	/* Is the unit selected? */
 	bool bIsSelected;
+
+	/* Where the unit is currently headed. */
+	FVector CurrentDestination;
+
+	/* Distance between unit and its destination. */
+	float CurrentDistance;
 
 	/* Temporary sphere visual representation. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -25,12 +79,21 @@ public:
 	/* Called when the game starts or when spawned */
 	virtual void BeginPlay() override;
 	
-	/* Called every frame */
+	/* Called every frame. */
 	virtual void Tick( float DeltaSeconds ) override;
 
-	/* Called to bind functionality to input */
+	/* Called to bind functionality to input. */
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
+	/* Selects the unit and deselects others. */
+	UFUNCTION()
+	void SelectExclusive();
+
+	/* Selects the unit. */
+	UFUNCTION()
+	void Select();
+
+	/* Binds the selection function to the OnSelect delegate. */
 	UFUNCTION()
 	void BindToSelectionAction();
 
@@ -49,6 +112,9 @@ private:
 	/* Moves to mouse cursor. False if there is nothing to move to. */
 	bool MoveToMouseCursor();
 
-	/* Moves to a given destination. */
-	void SetNewMoveDestination(const FVector DestLocation);
+	/* Moves the unit to a target position. */
+	void Move(const FVector DestLocation);
+
+	
 };
+

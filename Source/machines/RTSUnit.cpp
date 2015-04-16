@@ -24,38 +24,62 @@ void ARTSUnit::BeginPlay()
 {
 	Super::BeginPlay();
 
-	BindToSelectionAction();
+	BindToSelectionAction(); 
+
+	OnClicked.AddDynamic(this, &ARTSUnit::SelectExclusive);
 
 	PC = GetWorld()->GetFirstPlayerController();
-		
+
 	StaticMeshComponent->SetRelativeLocation(FVector(0, 0, 0));
-	
+
 }
 
 /* Called every frame. */
-void ARTSUnit::Tick( float DeltaTime )
+void ARTSUnit::Tick(float DeltaTime)
 {
-	Super::Tick( DeltaTime );
+	Super::Tick(DeltaTime);
 
 	//If selected, then when the player right clicks, move to cursor pos in world space.
 	if (PC->WasInputKeyJustReleased(EKeys::RightMouseButton) && bIsSelected)
 	{
 		MoveToMouseCursor();
 	}
+
+	/* Stops the unit once it has reached the goal with certain distance. */
+	if (State == UnitAction::Move)
+	{
+		CurrentDistance = FVector::Dist(CurrentDestination, GetActorLocation());
+		if (CurrentDistance < StopDistance)
+		{
+			State = UnitAction::Idle;
+		}
+	}
+
+	//Used to test state machine for actions.
+	//if (bIsSelected)
+	//{
+	//	switch (State){
+	//		case UnitAction::Move:
+	//			UE_LOG(LogTemp, Warning, TEXT("Moving..."));
+	//			break;
+	//		case UnitAction::Idle:
+	//			UE_LOG(LogTemp, Warning, TEXT("Idle..."));
+	//			break;
+	//	}		
+	//}
 }
 
 /* Called to bind functionality to input. */
 void ARTSUnit::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
-
 }
 
 /* After release of left mouse button, check if this unit is within selection box. */ 
 void ARTSUnit::CheckForSelection()
 {
-	UE_LOG(LogTemp, Warning, TEXT("called"));
 
+	/* Find screen coordinates of the unit. */
 	FVector2D MyResult = FVector2D(0, 0);
 
 	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PC->Player);
@@ -80,8 +104,11 @@ void ARTSUnit::CheckForSelection()
 		}
 	}
 
+	/* If the selection box contains the screen postion: */
 	if (ARTSHUD::SelectionContainsPoint(MyResult)){
-		ARTSHUD::SelectUnit(this);
+
+		// Select this unit, and leave possibility to select others.
+		Select();
 	}
 }
 
@@ -101,21 +128,25 @@ bool ARTSUnit::MoveToMouseCursor(){
 	if (Hit.bBlockingHit)
 	{
 		// We hit something, move there
-		SetNewMoveDestination(Hit.ImpactPoint);
+		Move(Hit.ImpactPoint);
 		return true;
 	}
+	State = UnitAction::Idle;
 	return false;
 }
 
-/* Moves to a given destination. */
-void ARTSUnit::SetNewMoveDestination(const FVector DestLocation)
+/* Moves the unit to a target position. */
+void ARTSUnit::Move(const FVector DestLocation)
 {
+	CurrentDestination = DestLocation;
 	UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
-	float const Distance = FVector::Dist(DestLocation, GetActorLocation());
+	//float const Distance = FVector::Dist(DestLocation, GetActorLocation());
+	CurrentDistance = FVector::Dist(DestLocation, GetActorLocation());
 
 	// We need to issue move command only if far enough in order for walk animation to play correctly
-	if (NavSys && (Distance > 120.0f))
+	if (NavSys && (CurrentDistance > StopDistance))
 	{
+		State = UnitAction::Move;
 		NavSys->SimpleMoveToLocation(GetController(), DestLocation);
 	}
 }
@@ -125,4 +156,20 @@ void ARTSUnit::BindToSelectionAction()
 {
 	AmachinesGameMode* GameMode = (AmachinesGameMode*)GetWorld()->GetAuthGameMode();
 	GameMode->OnSelect.AddDynamic(this, &ARTSUnit::CheckForSelection);
+}
+
+/* Selects the unit and deselects others. */
+void ARTSUnit::SelectExclusive()
+{
+	// Always deselect before selecting a single unit!
+	ARTSHUD::DeselectUnits();
+
+	// Select the unit.
+	ARTSHUD::SelectUnit(this);
+}
+
+/* Selects the unit. */
+void ARTSUnit::Select()
+{
+	ARTSHUD::SelectUnit(this);
 }

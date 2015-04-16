@@ -6,7 +6,7 @@
 #include "RTSUnitController.generated.h"
 
 /**
- * 
+ * Currently unused. In the future will control Unit characters.
  */
 UCLASS()
 class MACHINES_API ARTSUnitController : public AAIController

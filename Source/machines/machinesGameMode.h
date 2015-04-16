@@ -9,25 +9,18 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSelectionAction);
 
 /**
- * 
+ * Default GameMode class.
  */
 UCLASS()
 class MACHINES_API AmachinesGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
-	ADefaultPawn* CameraPawn;
-
-	APlayerController* CameraController;
-
-	TSubclassOf<APawn> PawnClass;
-
-	TSubclassOf<APlayerController> ControllerClass;
-
-	
 public:
 
+	/* Event used to tell every unit when to check for a selection. */
 	FSelectionAction OnSelect;
 
+	/* Sets default class values. */
 	AmachinesGameMode(const FObjectInitializer& ObjectInitializer);
 };

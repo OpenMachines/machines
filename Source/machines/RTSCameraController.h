@@ -6,7 +6,8 @@
 #include "RTSCameraController.generated.h"
 
 /**
- * 
+ * Used to control base player pawn, ARTSCamera.
+ * Control functions are all defined in that class.
  */
 UCLASS()
 class MACHINES_API ARTSCameraController : public APlayerController

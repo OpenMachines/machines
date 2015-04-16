@@ -6,7 +6,7 @@
 #include "RTSGameState.generated.h"
 
 /**
- * 
+ * Currently unused.
  */
 UCLASS()
 class MACHINES_API ARTSGameState : public AGameState

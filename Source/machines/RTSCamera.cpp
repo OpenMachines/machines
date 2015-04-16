@@ -168,7 +168,7 @@ void ARTSCamera::ZoomOut()
 void ARTSCamera::RepositionCamera()
 {
 	RootComponent->SetWorldLocation(FVector(0, 0, 1600));
-	RootComponent->SetRelativeRotation(FRotator(-80, 0, 0));
+	RootComponent->SetRelativeRotation(FRotator(-70, 0, 0));
 	CameraComponent->SetRelativeLocation(FVector(0, 0, 0));
 }
 

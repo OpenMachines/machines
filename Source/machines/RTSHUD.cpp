@@ -4,6 +4,7 @@
 #include "RTSHUD.h"
 #include "machinesGameMode.h"
 
+//Initialize static members.
 Rect* ARTSHUD::SelectionBox = new Rect(0, 0, 0, 0);
 TArray<ARTSUnit*> ARTSHUD::SelectedUnits;
 
@@ -22,22 +23,31 @@ void ARTSHUD::Tick(float Deltatime)
 /* Checks to see if left mouse was pressed or released to draw the selection. */
 void ARTSHUD::CheckForInput()
 {
-	//If left mouse was pressed.
+	/* If left mouse was pressed. */
 	if (PC->WasInputKeyJustPressed(EKeys::LeftMouseButton))
 	{
+		/* Show the selection box. */
 		ShowSelectionBox();
 	}
 
-	//If left mouse was released.
+	/* If left mouse was released. */
 	if (PC->WasInputKeyJustReleased(EKeys::LeftMouseButton))
 	{
-		//Use an event. Once all units are deselected, select new units.
-		//The event will be called by deselect units.
 		
-		//SelectionAction.Broadcast();
-		DeselectUnits();
-		AmachinesGameMode* GameMode = (AmachinesGameMode*)GetWorld()->GetAuthGameMode();
-		GameMode->OnSelect.Broadcast();
+		//Store mouse position when mouse is released
+		FVector2D NewMousePos;
+		PC->GetMousePosition(NewMousePos.X, NewMousePos.Y);
+		
+		//If we dragged a selection box instead of just clicked
+		if (!StartPos.Equals(NewMousePos, 1))
+		{
+			// Always deselect before selecting units!
+			DeselectUnits();
+			AmachinesGameMode* GameMode = (AmachinesGameMode*)GetWorld()->GetAuthGameMode();
+			GameMode->OnSelect.Broadcast();
+		}
+
+		/* Hide the selection box. */
 		HideSelectionBox();
 	}
 }
@@ -59,7 +69,7 @@ void ARTSHUD::DrawSelectionBox()
 	PC->GetMousePosition(MousePos.X, MousePos.Y);
 
 	//Draw the selection box.
-	DrawRect(FLinearColor::Red, StartPos.X, StartPos.Y, MousePos.X - StartPos.X, MousePos.Y - StartPos.Y);
+	DrawRect(FLinearColor(255, 0, 0, .25f), StartPos.X, StartPos.Y, MousePos.X - StartPos.X, MousePos.Y - StartPos.Y);
 
 	//Store rect of selection box.
 	SelectionBox = new Rect(StartPos.X, StartPos.Y, MousePos.X - StartPos.X, MousePos.Y - StartPos.Y);
@@ -81,13 +91,14 @@ void ARTSHUD::HideSelectionBox()
 	bDrawSelectionBox = false;
 }
 
-/* Selects a unit by adding it to an array. */
+/* Selects a specified unit. */
 void ARTSHUD::SelectUnit(ARTSUnit* Unit)
 {
 	Unit->bIsSelected = true;
 	SelectedUnits.Add(Unit);
 }
 
+/* Deselects all selected units. */
 void ARTSHUD::DeselectUnits()
 {
 	for (ARTSUnit* Unit : SelectedUnits){
