@@ -1,49 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
+#include "machines.h"
 #include "GameFramework/HUD.h"
 #include "RTSUnit.h"
+#include "Rect.h"
 #include "RTSHUD.generated.h"
 
-
-
-
-/**
-2D Rectangle
-*/
-struct Rect{
-
-	float X;
-	float Y;
-	float Width;
-	float Height;
-
-	Rect(){
-
-	}
-
-	Rect(float X, float Y, float Width, float Height)
-	{
-		this->X = X;
-		this->Y = Y;
-		this->Width = Width;
-		this->Height = Height;
-	}
-
-	/* Find area of rectangle. */
-	float Area(){
-		return Width*Height;
-	}
-
-	/* Set all values to zero. */
-	void Reset(){
-		this->X = 0;
-		this->Y = 0;
-		this->Width = 0;
-		this->Height = 0;
-	}
-};
 
 /**
 Handles camera functions and unit selection. 
@@ -61,19 +24,7 @@ public:
 	APlayerController* PC;
 
 	/* Check if the selection box rect contains a given point. */
-	static bool SelectionContainsPoint(FVector2D ScreenPosition);
-
-	/* Check if a rect on the screen contains a given point. */
-	static bool RectContains(Rect* rect, FVector2D ScreenPosition);
-
-	/* Array of all selected units. */
-	static TArray<ARTSUnit*> SelectedUnits;
-
-	/* Select a specified unit. */
-	static void SelectUnit(ARTSUnit* Unit);
-
-	/* Deselect all selected units. */
-	static void DeselectUnits();
+	static bool SelectionContainsPoint(FVector2D ScreenPosition);	
 
 protected:
 

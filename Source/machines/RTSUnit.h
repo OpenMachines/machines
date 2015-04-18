@@ -114,7 +114,6 @@ private:
 
 	/* Moves the unit to a target position. */
 	void Move(const FVector DestLocation);
-
 	
 };
 

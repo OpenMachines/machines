@@ -4,6 +4,7 @@
 #include "RTSUnit.h"
 #include "RTSHUD.h"
 #include "machinesGameMode.h"
+#include "RTSCameraController.h"
 
 /* Sets default values. */
 ARTSUnit::ARTSUnit(const FObjectInitializer& ObjectInitializer)
@@ -162,14 +163,14 @@ void ARTSUnit::BindToSelectionAction()
 void ARTSUnit::SelectExclusive()
 {
 	// Always deselect before selecting a single unit!
-	ARTSHUD::DeselectUnits();
+	ARTSCameraController::DeselectUnits();
 
 	// Select the unit.
-	ARTSHUD::SelectUnit(this);
+	ARTSCameraController::SelectUnit(this);
 }
 
 /* Selects the unit. */
 void ARTSUnit::Select()
 {
-	ARTSHUD::SelectUnit(this);
+	ARTSCameraController::SelectUnit(this);
 }

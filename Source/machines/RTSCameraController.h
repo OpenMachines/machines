@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/PlayerController.h"
+#include "RTSUnit.h"
 #include "RTSCameraController.generated.h"
 
 /**
@@ -14,7 +15,16 @@ class MACHINES_API ARTSCameraController : public APlayerController
 {
 	GENERATED_BODY()
 
-		virtual void BeginPlay() override;
+	virtual void BeginPlay() override;
 	
-	
+public:
+
+	/* Array of all selected units. */
+	static TArray<ARTSUnit*> SelectedUnits;
+
+	/* Select a specified unit. */
+	static void SelectUnit(ARTSUnit* Unit);
+
+	/* Deselect all selected units. */
+	static void DeselectUnits();
 };
