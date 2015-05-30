@@ -4,7 +4,7 @@
 #include "RTSCamera.h"
 
 
-// Sets default values
+// Initializes camera and sets required values.
 ARTSCamera::ARTSCamera(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -40,91 +40,62 @@ void ARTSCamera::BeginPlay()
 	RepositionCamera();
 }
 
-// Called every frame
+// Checks if the player's cursor is at a screen edge
 void ARTSCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	MoveCameraEdge(DeltaTime);	
 }
 
-// Called to bind functionality to input
+// Binds keyboard camera controls and mouse wheel scroll zoom
 void ARTSCamera::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	//Super::SetupPlayerInputComponent(InputComponent);
-	InputComponent->BindAxis("MoveForward", this, &ARTSCamera::MoveCameraForward);
-	InputComponent->BindAxis("MoveRight", this, &ARTSCamera::MoveCameraRight);
+	InputComponent->BindAxis("MoveForward", this, &ARTSCamera::MoveForward);
+	InputComponent->BindAxis("MoveRight", this, &ARTSCamera::MoveRight);
 
 	//opposite to invert scrolling
 	InputComponent->BindAction("MouseWheelUp", IE_Pressed, this, &ARTSCamera::ZoomIn);
 	InputComponent->BindAction("MouseWheelDown", IE_Pressed, this, &ARTSCamera::ZoomOut);
 }
 
-//Uses wasd controls to move camera forward or backward
-void ARTSCamera::MoveCameraForward(float Value)
-{
-	// find out which way is forward
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-	// get forward vector
-	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	AddMovementInput(Direction, Value);
-}
-
-//Uses wasd controls to move camera left or right
-void ARTSCamera::MoveCameraRight(float Value)
-{
-	// find out which way is right
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-	// get right vector 
-	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	// add movement in that direction
-	AddMovementInput(Direction, Value);
-}
-
-//Uses mouse controls to move camera forward or backward
+// Moves camera forward or backward
 void ARTSCamera::MoveForward(float direction)
 {
-	//Don't execute any further if the camera can't move
+	// Do not move if the camera is not allowed to.
 	if (!bCanMoveCamera)
 		return;
 
-	//Calculate how much to move the camera by
-	float movementValue = direction * CameraMovementSpeed;
+	// Find forward direction
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-	//Create a delta vector that moves by the movementValue in the direction of the camera's yaw
-	FVector deltaMovement = movementValue * GetIsolatedCameraYaw().Vector();
+	// Get forward vector
+	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X) * direction;
 
-	//Add the delta to a new vector
-	FVector newLocation = this->GetActorLocation() + deltaMovement;
-	//newLocation = FVector(newLocation.X, newLocation.Y, FMath::Clamp(newLocation.Z, CameraMinHeight, CameraMaxHeight));
-	//Set the new location of the pawn
-	SetActorLocation(newLocation);
+	// Move with correct direction and speed
+	AddMovementInput(Direction, CameraMovementSpeed);
 }
 
-//Uses mouse controls to move camera left or right
+// Moves camera left or right
 void ARTSCamera::MoveRight(float direction)
 {
-	//Don't execute any further if the camera can't move
+	// Do not move if the camera is not allowed to.
 	if (!bCanMoveCamera)
 		return;
 
-	//Calculate how much to move the camera by
-	float movementValue = direction * CameraMovementSpeed;
+	// Find right direction
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-	//Create a delta vector that moves by the movementValue in the direction of the right of the camera's yaw
-	FVector deltaMovement = movementValue * (FRotator(0.0f, 90.0f, 0.0f) + GetIsolatedCameraYaw()).Vector();
+	// Get right vector 
+	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y) * direction;
 
-	//Add the delta to a new vector
-	FVector newLocation = this->GetActorLocation() + deltaMovement;
-
-	//Set the new location of the pawn.
-	SetActorLocation(newLocation);
+	// Move with correct direction and speed
+	AddMovementInput(Direction, CameraMovementSpeed);
 }
 
-//Zooms the camera in when scrolling down.
+// Zooms the camera in when scrolling down.
 void ARTSCamera::ZoomIn()
 {
 	//Get yaw rotation.
@@ -144,7 +115,7 @@ void ARTSCamera::ZoomIn()
 	SetActorLocation(FVector(newPos.X, newPos.Y, FMath::Clamp(newPos.Z, CameraMinHeight, CameraMaxHeight)));
 }
 
-//Zooms the camera out when scrolling up.
+// Zooms the camera out when scrolling up.
 void ARTSCamera::ZoomOut()
 {
 	//Get yaw rotation.
@@ -164,7 +135,7 @@ void ARTSCamera::ZoomOut()
 	SetActorLocation(FVector(newPos.X, newPos.Y, FMath::Clamp(newPos.Z, CameraMinHeight, CameraMaxHeight)));
 }
 
-//Resets the camera position to original location
+// Resets the camera position to original location
 void ARTSCamera::RepositionCamera()
 {
 	RootComponent->SetWorldLocation(FVector(0, 0, 1600));
@@ -172,14 +143,14 @@ void ARTSCamera::RepositionCamera()
 	CameraComponent->SetRelativeLocation(FVector(0, 0, 0));
 }
 
-//Returns yaw value of camera
+// Returns yaw value of camera
 FRotator ARTSCamera::GetIsolatedCameraYaw()
 {
 	//Return a FRotator containing (0, CameraYaw, 0)
 	return FRotator(0.0f, CameraComponent->ComponentToWorld.Rotator().Yaw, 0.0f);
 }
 
-//Detects whether cursor is at edge of viewport. If it is, move camera.
+// Detects whether cursor is at edge of viewport. If it is, move camera.
 void ARTSCamera::MoveCameraEdge(float DeltaTime){
 	//Create variables to hold mouse position and screen size
 	FVector2D mousePosition;
