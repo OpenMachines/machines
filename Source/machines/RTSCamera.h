@@ -76,18 +76,6 @@ public:
 	UFUNCTION()
 		FRotator GetIsolatedCameraYaw();
 
-	/** Moves the camera forward
-	* @param direcation - (1.0 for forward, -1.0 for backward)
-	*/
-	UFUNCTION()
-		void MoveCameraForward(float direction);
-
-	/** Moves the camera forward
-	* @param direcation - (1.0 for right, -1.0 for left)
-	*/
-	UFUNCTION()
-		void MoveCameraRight(float direction);
-
 	/** Repositions The Camera */
 	UFUNCTION()
 		void RepositionCamera();
