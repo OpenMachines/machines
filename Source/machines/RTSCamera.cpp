@@ -2,7 +2,7 @@
 
 #include "machines.h"
 #include "RTSCamera.h"
-
+#include "Core.h"
 
 // Initializes camera and sets required values.
 ARTSCamera::ARTSCamera(const FObjectInitializer& ObjectInitializer)
@@ -35,7 +35,7 @@ ARTSCamera::ARTSCamera(const FObjectInitializer& ObjectInitializer)
 
 // Called when the game starts or when spawned
 void ARTSCamera::BeginPlay()
-{
+{	
 	GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RepositionCamera();
 }
@@ -65,13 +65,14 @@ void ARTSCamera::MoveForward(float direction)
 	// Do not move if the camera is not allowed to.
 	if (!bCanMoveCamera)
 		return;
+	
+	// Find forward direction **Old**
+	//FRotator rotation = GetActorForwardVector();
+	//const FRotator Rotation = Controller->GetControlRotation();
+	//const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-	// Find forward direction
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-	// Get forward vector
-	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X) * direction;
+	// Get forward vector in world space.
+	const FVector Direction = FVector::ForwardVector * direction; /*FRotationMatrix(rotation).GetUnitAxis(EAxis::X)*/
 
 	// Move with correct direction and speed
 	AddMovementInput(Direction, CameraMovementSpeed);
@@ -84,12 +85,13 @@ void ARTSCamera::MoveRight(float direction)
 	if (!bCanMoveCamera)
 		return;
 
-	// Find right direction
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
+	// Find right direction **Old**
+	//FRotator rotation = GetActorRotation();
+	//const float YawRotation = Controller->GetControlRotation().Yaw;
+	//const FRotator YawRotator(0, 0, 0);
 
-	// Get right vector 
-	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y) * direction;
+	// Get right vector in relative space.
+	const FVector Direction = GetActorRightVector() * direction; /*FRotationMatrix(rotation).GetUnitAxis(EAxis::Y)*/
 
 	// Move with correct direction and speed
 	AddMovementInput(Direction, CameraMovementSpeed);
