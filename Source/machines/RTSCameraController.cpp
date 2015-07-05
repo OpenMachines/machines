@@ -5,6 +5,8 @@
 #include "RTSHUD.h"
 #include "machinesGameMode.h"
 
+#define print(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
+
 TArray<ARTSUnit*> ARTSCameraController::SelectedUnits;
 
 /* Called when the game starts or when spawned. Enables cursor controls. */
@@ -26,7 +28,6 @@ void ARTSCameraController::Tick(float DeltaTime)
 	{		
 		for (ARTSUnit* Unit : SelectedUnits)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("One command sent!"));
 			Unit->PerformCommand();
 		}
 	}
@@ -55,10 +56,6 @@ void ARTSCameraController::CheckForSelection()
 		GetMousePosition(NewMousePos.X, NewMousePos.Y);
 
 		float cursorDelta = FVector2D::Distance(StartPos, NewMousePos);
-
-
-
-		//UE_LOG(LogTemp, Warning, TEXT("Cursor Delta Movement: %f"), cursorDelta);
 
 		//If we dragged a selection box instead of just clicked
 		if (cursorDelta>5.0f)
@@ -95,20 +92,17 @@ bool ARTSCameraController::CheckForClickSelection()
 
 		if (Hit.Actor != NULL)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Found Actor"));
+			print(Hit.GetActor()->GetName());
 
 			ARTSUnit* unit = Cast<ARTSUnit>(Hit.GetActor());
 		
 			if (unit != NULL)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Selected unit with click!"));
 				unit->SelectExclusive();
 				return true;
 			}
 		}
 	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("Did not select a unit. Deselecting."));
 	return false;
 }
 
@@ -117,7 +111,6 @@ void ARTSCameraController::SelectUnit(ARTSUnit* Unit)
 {
 	Unit->bIsSelected = true;
 	SelectedUnits.Add(Unit);
-	UE_LOG(LogTemp, Warning, TEXT("Yes?"));
 }
 
 /* Deselects all selected units. */

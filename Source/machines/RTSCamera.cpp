@@ -30,13 +30,14 @@ ARTSCamera::ARTSCamera(const FObjectInitializer& ObjectInitializer)
 	//Allow camera controls
 	bCanMoveCamera = true;
 
-	CameraComponent->bUsePawnControlRotation = false;
+	CameraComponent->bUsePawnControlRotation = false;	
 }
 
 // Called when the game starts or when spawned
 void ARTSCamera::BeginPlay()
 {	
 	GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RepositionCamera();
 }
 
