@@ -18,6 +18,8 @@ ARTSUnit::ARTSUnit(const FObjectInitializer& ObjectInitializer)
 
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	GunOffset = FVector(100.0f, 30.0f, 10.0f);
 }
 
 /* Called when the game starts or when spawned. */
@@ -27,7 +29,7 @@ void ARTSUnit::BeginPlay()
 
 	BindToSelectionAction(); 
 
-	OnClicked.AddDynamic(this, &ARTSUnit::SelectExclusive);
+	//OnClicked.AddDynamic(this, &ARTSUnit::SelectExclusive);
 
 	PC = GetWorld()->GetFirstPlayerController();
 
@@ -39,12 +41,6 @@ void ARTSUnit::BeginPlay()
 void ARTSUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//If selected, then when the player right clicks, move to cursor pos in world space.
-	if (PC->WasInputKeyJustReleased(EKeys::RightMouseButton) && bIsSelected)
-	{
-		MoveToMouseCursor();
-	}
 
 	/* Stops the unit once it has reached the goal with certain distance. */
 	if (State == UnitAction::Move)
@@ -123,7 +119,8 @@ FHitResult ARTSUnit::GetMouseWorldCoordinates()
 }
 
 /* Moves to mouse cursor position in world coordinates. */
-bool ARTSUnit::MoveToMouseCursor(){
+bool ARTSUnit::PerformCommand()
+{
 
 	FHitResult Hit = GetMouseWorldCoordinates();
 	if (Hit.bBlockingHit)
@@ -173,4 +170,40 @@ void ARTSUnit::SelectExclusive()
 void ARTSUnit::Select()
 {
 	ARTSCameraController::SelectUnit(this);
+}
+
+/* Fires a projectile. */
+void ARTSUnit::OnFire()
+{
+	// try and fire a projectile
+	if (ProjectileClass != NULL)
+	{
+		const FRotator SpawnRotation = GetControlRotation();
+		// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+		const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(GunOffset);
+
+		UWorld* const World = GetWorld();
+		if (World != NULL)
+		{
+			// spawn the projectile at the muzzle
+			World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+		}
+	}
+
+	// try and play the sound if specified
+	//if (FireSound != NULL)
+	//{
+	//	UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+	//}
+
+	//// try and play a firing animation if specified
+	//if (FireAnimation != NULL)
+	//{
+	//	// Get the animation object for the arms mesh
+	//	UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+	//	if (AnimInstance != NULL)
+	//	{
+	//		AnimInstance->Montage_Play(FireAnimation, 1.f);
+	//	}
+	//}
 }

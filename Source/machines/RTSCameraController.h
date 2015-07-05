@@ -19,6 +19,18 @@ class MACHINES_API ARTSCameraController : public APlayerController
 	
 public:
 
+	// The player's HUD object.
+	class ARTSHUD* HUD;
+
+	/* Checks if the player is attempting to select units. */
+	void CheckForSelection();
+
+	/* Checks if the player is attempting to select units. */
+	bool CheckForClickSelection();
+
+	/* Checks for a player sent command every frame. */
+	virtual void Tick(float DeltaSeconds) override;
+
 	/* Array of all selected units. */
 	static TArray<ARTSUnit*> SelectedUnits;
 
@@ -27,4 +39,10 @@ public:
 
 	/* Deselect all selected units. */
 	static void DeselectUnits();
+
+private:
+
+	/* Start position of selection box. */
+	FVector2D StartPos;
+
 };

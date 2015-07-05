@@ -17,39 +17,7 @@ void ARTSHUD::BeginPlay()
 /* Called every frame. */
 void ARTSHUD::Tick(float Deltatime)
 {
-	CheckForInput();
-}
-
-/* Checks to see if left mouse was pressed or released to draw the selection. */
-void ARTSHUD::CheckForInput()
-{
-	/* If left mouse was pressed. */
-	if (PC->WasInputKeyJustPressed(EKeys::LeftMouseButton))
-	{
-		/* Show the selection box. */
-		ShowSelectionBox();
-	}
-
-	/* If left mouse was released. */
-	if (PC->WasInputKeyJustReleased(EKeys::LeftMouseButton))
-	{
-		
-		//Store mouse position when mouse is released
-		FVector2D NewMousePos;
-		PC->GetMousePosition(NewMousePos.X, NewMousePos.Y);
-		
-		//If we dragged a selection box instead of just clicked
-		if (!StartPos.Equals(NewMousePos, 1))
-		{
-			// Always deselect before selecting units!
-			ARTSCameraController::DeselectUnits();
-			AmachinesGameMode* GameMode = (AmachinesGameMode*)GetWorld()->GetAuthGameMode();
-			GameMode->OnSelect.Broadcast();
-		}
-
-		/* Hide the selection box. */
-		HideSelectionBox();
-	}
+	//CheckForInput();
 }
 
 /* Draws the selection box if the left mouse button is held. */

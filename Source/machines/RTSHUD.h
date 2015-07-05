@@ -24,7 +24,13 @@ public:
 	APlayerController* PC;
 
 	/* Check if the selection box rect contains a given point. */
-	static bool SelectionContainsPoint(FVector2D ScreenPosition);	
+	static bool SelectionContainsPoint(FVector2D ScreenPosition);
+
+	/* Set selection box to be drawn. */
+	void ShowSelectionBox();
+
+	/* Set the selection box to be hidden. */
+	void HideSelectionBox();
 
 protected:
 
@@ -48,17 +54,8 @@ private:
 	/* Start position of selection box. */
 	FVector2D StartPos;
 
-	/* Check for player mouse input. */
-	void CheckForInput();
-
 	/* Draw the selection box. */
-	void DrawSelectionBox();	
-
-	/* Set selection box to be drawn. */
-	void ShowSelectionBox();
-
-	/* Set the selection box to be hidden. */
-	void HideSelectionBox();
+	void DrawSelectionBox();		
 
 };
 

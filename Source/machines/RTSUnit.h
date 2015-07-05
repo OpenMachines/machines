@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Character.h"
+#include "Projectile.h"
 #include "RTSUnit.generated.h"
 
 enum class UnitAction {Move, Attack, Idle, Patrol, Guard};
@@ -85,9 +86,20 @@ public:
 	/* Called to bind functionality to input. */
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
+	/** Gun muzzle's offset from the characters location */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	FVector GunOffset;
+
+	/* Temporary sphere visual representation. */
+	UPROPERTY(EditDefaultsOnly, Category = Gameplay)
+	TSubclassOf<class AProjectile> ProjectileClass;
+
 	/* Selects the unit and deselects others. */
 	UFUNCTION()
 	void SelectExclusive();
+
+	/* Fires a projectile. */
+	void OnFire();
 
 	/* Selects the unit. */
 	UFUNCTION()
@@ -96,6 +108,10 @@ public:
 	/* Binds the selection function to the OnSelect delegate. */
 	UFUNCTION()
 	void BindToSelectionAction();
+
+	/* Moves to mouse cursor. False if there is nothing to move to. */
+	UFUNCTION()
+	bool PerformCommand();
 
 private:
 
@@ -107,10 +123,7 @@ private:
 	void CheckForSelection();
 
 	/* Returns the position under the cursor in the world. */
-	FHitResult GetMouseWorldCoordinates();
-
-	/* Moves to mouse cursor. False if there is nothing to move to. */
-	bool MoveToMouseCursor();
+	FHitResult GetMouseWorldCoordinates();	
 
 	/* Moves the unit to a target position. */
 	void Move(const FVector DestLocation);
