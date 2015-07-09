@@ -126,6 +126,9 @@ public:
 
 private:
 
+	/* Sets proper rotation values for the character. */
+	void SetRotationValues();
+
 	/* Player Controller. */
 	APlayerController* PC;
 

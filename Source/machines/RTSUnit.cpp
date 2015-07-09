@@ -23,13 +23,7 @@ ARTSUnit::ARTSUnit(const FObjectInitializer& ObjectInitializer)
 
 	const ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 	StaticMeshComponent->SetStaticMesh(MeshObj.Object);
-
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-
-	DefaultAttackSpeed = 1.0f;
-
-	CurrentAttackSpeed = DefaultAttackSpeed;
-
+		
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -43,9 +37,27 @@ void ARTSUnit::BeginPlay()
 
 	BindToSelectionAction(); 
 
+	SetRotationValues();
+
 	PC = GetWorld()->GetFirstPlayerController();
 
 	StaticMeshComponent->SetRelativeLocation(FVector(0, 0, 0));
+
+}
+
+/* Sets proper rotation values for the character. */
+void ARTSUnit::SetRotationValues()
+{
+	UCharacterMovementComponent* CharacterMovement = GetCharacterMovement();
+
+	CharacterMovement->bOrientRotationToMovement = true;
+	CharacterMovement->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+	bUseControllerRotationYaw = false;
+	CharacterMovement->bUseControllerDesiredRotation = false;
+
+	DefaultAttackSpeed = 1.0f;
+
+	CurrentAttackSpeed = DefaultAttackSpeed;
 
 }
 
@@ -84,7 +96,7 @@ void ARTSUnit::Tick(float DeltaTime)
 
 				FRotator LookRot = (Target->GetActorLocation() - GetActorLocation()).Rotation();
 
-				FRotator NewRot = FMath::RInterpTo(GetActorRotation(), LookRot, DeltaTime, 5);
+				FRotator NewRot = FMath::RInterpTo(GetActorRotation(), LookRot, DeltaTime, CharacterMovement->RotationRate.Yaw * DeltaTime);
 
 				SetActorRelativeRotation(NewRot);
 			}
@@ -173,7 +185,14 @@ bool ARTSUnit::PerformCommand()
 void ARTSUnit::Attack(AActor* Target)
 {
 	UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
-	NavSys->SimpleMoveToActor(GetController(), Target);
+
+	CurrentDistance = FVector::Dist(Target->GetActorLocation(), GetActorLocation());
+
+	if (CurrentDistance > AttackDistance)
+	{
+		NavSys->SimpleMoveToActor(GetController(), Target);
+	}
+	
 	this->Target = Target;
 	State = UnitAction::Attack;
 }
