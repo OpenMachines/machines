@@ -31,6 +31,9 @@ public:
 	/* Display name of a unit. */
 	FString Name;
 
+	/* Max distance at which the unit can attack. */
+	float AttackDistance = 600.0f;
+
 	/* Current health of a unit. */
 	float CurrentHealth;
 
@@ -55,11 +58,13 @@ public:
 	/* Default movement speed of a unit. */
 	float DefaultSpeed;
 
-	/* Current attack speed of a unit. */
+	/* Current attack speed of a unit in shots per second. */
 	float CurrentAttackSpeed;
 
-	/* Default attack speed of a unit. */
+	/* Default attack speed of a unit in shots per second. */
 	float DefaultAttackSpeed;
+
+	float NextTimeToAttack;
 
 	/* Is the unit selected? */
 	bool bIsSelected;
@@ -97,6 +102,12 @@ public:
 	/* Selects the unit and deselects others. */
 	UFUNCTION()
 	void SelectExclusive();
+
+	/* Sets the unit to attack a target unit. */
+	void Attack(AActor* Target);
+
+	/* Target actor to attack. */
+	AActor* Target;
 
 	/* Fires a projectile. */
 	void OnFire();

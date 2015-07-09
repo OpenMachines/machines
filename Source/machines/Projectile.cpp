@@ -20,6 +20,9 @@ AProjectile::AProjectile()
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);		
 	RootComponent = ProjectileMesh;
 
+	RootComponent->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
+	//GetTransform().SetScale3D(FVector(0.2f, 0.2f, 0.2f));
+
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement0"));
 	ProjectileMovement->UpdatedComponent = ProjectileMesh;

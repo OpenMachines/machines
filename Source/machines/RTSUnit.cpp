@@ -5,6 +5,11 @@
 #include "RTSHUD.h"
 #include "machinesGameMode.h"
 #include "RTSCameraController.h"
+#include "KismetMathLibrary.generated.h"
+
+
+#define print(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
+
 
 /* Sets default values. */
 ARTSUnit::ARTSUnit(const FObjectInitializer& ObjectInitializer)
@@ -13,8 +18,17 @@ ARTSUnit::ARTSUnit(const FObjectInitializer& ObjectInitializer)
 	StaticMeshComponent = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("StaticMeshComponent"));
 	StaticMeshComponent->AttachParent = GetRootComponent();
 
+	static ConstructorHelpers::FClassFinder<AProjectile> ProjectileClassFinder(TEXT("Class'/Script/machines.Projectile'"));
+	ProjectileClass = ProjectileClassFinder.Class;
+
 	const ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 	StaticMeshComponent->SetStaticMesh(MeshObj.Object);
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	DefaultAttackSpeed = 1.0f;
+
+	CurrentAttackSpeed = DefaultAttackSpeed;
 
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -29,8 +43,6 @@ void ARTSUnit::BeginPlay()
 
 	BindToSelectionAction(); 
 
-	//OnClicked.AddDynamic(this, &ARTSUnit::SelectExclusive);
-
 	PC = GetWorld()->GetFirstPlayerController();
 
 	StaticMeshComponent->SetRelativeLocation(FVector(0, 0, 0));
@@ -42,28 +54,42 @@ void ARTSUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/* Stops the unit once it has reached the goal with certain distance. */
-	if (State == UnitAction::Move)
+	switch (State)
 	{
-		CurrentDistance = FVector::Dist(CurrentDestination, GetActorLocation());
-		if (CurrentDistance < StopDistance)
-		{
-			State = UnitAction::Idle;
-		}
-	}
+		/* Move unit to destination. */
+		case UnitAction::Move:
+			CurrentDistance = FVector::Dist(CurrentDestination, GetActorLocation());
+			if (CurrentDistance < StopDistance)
+			{
+				State = UnitAction::Idle;
+			}
+			break;
+		/* Tell unit to attack target. */
+		case UnitAction::Attack:
+			if (Target != NULL)
+			{
+				CurrentDistance = FVector::Dist(Target->GetActorLocation(), GetActorLocation());
 
-	//Used to test state machine for actions.
-	//if (bIsSelected)
-	//{
-	//	switch (State){
-	//		case UnitAction::Move:
-	//			UE_LOG(LogTemp, Warning, TEXT("Moving..."));
-	//			break;
-	//		case UnitAction::Idle:
-	//			UE_LOG(LogTemp, Warning, TEXT("Idle..."));
-	//			break;
-	//	}		
-	//}
+				float Cooldown = 1.0f / CurrentAttackSpeed;
+
+				if (CurrentDistance < AttackDistance)
+				{
+					GetController()->StopMovement();
+					if (GetWorld()->GetTimeSeconds() >= NextTimeToAttack)
+					{
+						OnFire();
+						NextTimeToAttack = GetWorld()->GetTimeSeconds() + Cooldown;
+					}
+				}
+
+				FRotator LookRot = (Target->GetActorLocation() - GetActorLocation()).Rotation();
+
+				FRotator NewRot = FMath::RInterpTo(GetActorRotation(), LookRot, DeltaTime, 5);
+
+				SetActorRelativeRotation(NewRot);
+			}
+			break;
+	}
 }
 
 /* Called to bind functionality to input. */
@@ -121,16 +147,35 @@ FHitResult ARTSUnit::GetMouseWorldCoordinates()
 /* Moves to mouse cursor position in world coordinates. */
 bool ARTSUnit::PerformCommand()
 {
-
 	FHitResult Hit = GetMouseWorldCoordinates();
 	if (Hit.bBlockingHit)
 	{
+		if (Hit.Actor != NULL)
+		{
+			ARTSUnit* unit = Cast<ARTSUnit>(Hit.GetActor());
+
+			if (unit != NULL)
+			{
+				Attack(unit);
+				return true;
+			}
+		}
+			
 		// We hit something, move there
 		Move(Hit.ImpactPoint);
 		return true;
 	}
 	State = UnitAction::Idle;
 	return false;
+}
+
+/* Sets the unit to attack a target unit. */
+void ARTSUnit::Attack(AActor* Target)
+{
+	UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
+	NavSys->SimpleMoveToActor(GetController(), Target);
+	this->Target = Target;
+	State = UnitAction::Attack;
 }
 
 /* Moves the unit to a target position. */
